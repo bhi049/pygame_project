@@ -33,7 +33,7 @@ while running:
 
     # handle key presses
     keys = pygame.key.get_pressed()
-    player.move(keys, WIDTH) # move the player based on key input
+    player.move(keys, WIDTH, HEIGHT) # move the player based on key input
 
     # clear the screen and draw everything
     screen.fill(WHITE)
