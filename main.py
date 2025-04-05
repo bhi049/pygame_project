@@ -1,51 +1,45 @@
 import pygame
 import sys
+from player import Player # import custom Player class
 
-# Initialize Pygame
+# initialize Pygame
 pygame.init()
 
-# Set up the display
+# set up the display window size
 WIDTH, HEIGHT = 800, 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Simple Pygame Window")
 
-# clock and FPS
+# set up clock for controlling frame rate
 clock = pygame.time.Clock()
 FPS = 60
 
-# colors
+# define colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
-# Player settings
-player_pos = [100, 100]
-player_size = 50
-player_speed = 5
+# create the player object
+player = Player(WIDTH // 2, HEIGHT - 60)
 
-# Main loop
+# main game loop
 running = True
 while running:
-    clock.tick(FPS)
+    clock.tick(FPS) # limit the loop to FPS
 
+    # handle events (like quitting)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
+    # handle key presses
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_a]:
-        player_pos[0] -= player_speed
-    if keys[pygame.K_d]:
-        player_pos[0] += player_speed
-    if keys[pygame.K_w]:
-        player_pos[1] -= player_speed
-    if keys[pygame.K_s]:
-        player_pos[1] += player_speed
+    player.move(keys, WIDTH) # move the player based on key input
 
-    # draw everything
+    # clear the screen and draw everything
     screen.fill(WHITE)
-    pygame.draw.rect(screen, BLACK, (*player_pos, player_size, player_size))
-    pygame.display.flip()
+    player.draw(screen)
+    pygame.display.flip() # update the display
 
-# qiut
+# quit the game
 pygame.quit()
 sys.exit()
