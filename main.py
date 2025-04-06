@@ -44,6 +44,9 @@ while running:
     keys = pygame.key.get_pressed()
     player.move(keys, WIDTH, HEIGHT) # move the player based on key input
 
+    dt = clock.get_time() # delta time for animation
+    player.thrust.update(dt, player.is_thrusting) # update thrust animation
+
     # clear the screen and draw everything
     screen.fill(WHITE)
     player.draw(screen)

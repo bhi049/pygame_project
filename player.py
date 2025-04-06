@@ -1,6 +1,7 @@
 import pygame
 import os
 import math
+from thrust import Thrust
 
 class Player:
     def __init__(self, x, y):
@@ -16,7 +17,6 @@ class Player:
         self.direction = "UP"
         # initial rotation
         self.rotate()
-
         # movement
         self.velocity_x = 0
         self.velocity_y = 0
@@ -24,10 +24,11 @@ class Player:
         self.friction = 0.1
         self.max_speed = 8
 
+        self.thrust = Thrust(
+        direction_ref=lambda: self.direction,
+        get_position_func=self.get_thrust_position
+)
 
-    # draw the player image on the screen
-    def draw(self, screen):
-        screen.blit(self.image, self.rect)
 
     def get_direction_from_vector(self, dx, dy):
         if dx == 0 and dy == -1:
@@ -48,6 +49,22 @@ class Player:
             return "DOWNRIGHT"
         
         return self.direction
+    
+    def get_thrust_position(self, direction):
+        offset_map = {
+            "UP": (0, 50),
+            "DOWN": (0, -50),
+            "LEFT": (50, 0),
+            "RIGHT": (-50, 0),
+            "UPRIGHT": (-35, 35),
+            "UPLEFT": (35, 35),
+            "DOWNRIGHT": (-35, -35),
+            "DOWNLEFT": (35, -35)
+        }
+
+        offset = offset_map.get(direction, (0, 50))
+        return (self.rect.centerx + offset[0], self.rect.centery + offset[1])
+
 
     # move the player based on key inputs
     def move(self, keys, screen_width, screen_height):
@@ -65,6 +82,8 @@ class Player:
 
         if keys[pygame.K_d]:
             dx = 1
+
+        self.is_thrusting = (dx != 0 or dy != 0)
 
         # update direction based on input
         if dx != 0 or dy != 0:
@@ -102,6 +121,7 @@ class Player:
 
         # keep player within screen bounds
         self.rect.clamp_ip(pygame.Rect(0, 0, screen_width, screen_height))
+
     def rotate(self):
         # determine angle based on direction
         angle_map = {
@@ -122,3 +142,7 @@ class Player:
         # keep position centered
         old_center = self.rect.center
         self.rect = self.image.get_rect(center=old_center)
+
+    def draw(self, screen):
+        self.thrust.draw(screen)
+        screen.blit(self.image, self.rect)
