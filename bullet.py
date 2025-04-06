@@ -1,5 +1,6 @@
 import pygame
 import os
+import math
 
 class Bullet:
     def __init__(self, x, y, direction):
@@ -11,28 +12,11 @@ class Bullet:
         self.image = self.rotate_image(original_image, direction)
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = 15
+        self.dx, self.dy = self.get_normalized_direction(direction)
 
     def move(self):
-        if self.direction == "UP":
-            self.rect.y -= self.speed
-        elif self.direction == "DOWN":
-            self.rect.y += self.speed
-        elif self.direction == "LEFT":
-            self.rect.x -= self.speed
-        elif self.direction == "RIGHT":
-            self.rect.x += self.speed
-        elif self.direction == "UPRIGHT":
-            self.rect.x += self.speed
-            self.rect.y -= self.speed
-        elif self.direction == "UPLEFT":
-            self.rect.x -= self.speed
-            self.rect.y -= self.speed
-        elif self.direction == "DOWNRIGHT":
-            self.rect.x += self.speed
-            self.rect.y += self.speed
-        elif self.direction == "DOWNLEFT":
-            self.rect.x -= self.speed
-            self.rect.y += self.speed
+        self.rect.x += self.dx
+        self.rect.y += self.dy
 
     def rotate_image(self, image, direction):
         angle_map = {
@@ -47,6 +31,25 @@ class Bullet:
         }
         angle = angle_map[direction]
         return pygame.transform.rotate(image, angle)
+    
+    def get_normalized_direction(self, direction):
+        dir_map = {
+            "UP": (0, -1),
+            "RIGHT": (1, 0),
+            "DOWN": (0, 1),
+            "LEFT": (-1, 0),
+            "UPRIGHT": (1, -1),
+            "UPLEFT": (-1, -1),
+            "DOWNRIGHT": (1, 1),
+            "DOWNLEFT": (-1, 1)
+        }
+
+        dx, dy = dir_map.get(direction, (0, -1))
+        lenght = math.hypot(dx, dy)
+        if lenght != 0:
+            dx = (dx / lenght) * self.speed
+            dy = (dy / lenght) * self.speed
+        return dx, dy
 
     def draw(self, screen):
         screen.blit(self.image, self.rect)
