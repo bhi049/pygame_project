@@ -1,5 +1,6 @@
 import pygame
 import os
+import math
 
 class Player:
     def __init__(self, x, y):
@@ -10,13 +11,19 @@ class Player:
         self.image = self.original_image # current image used for drawing
         # get the rectangular area for positioning
         self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-        # movement speed
-        self.speed = 5
+        self.rect.center = (x, y) 
         # initial direction
         self.direction = "UP"
         # initial rotation
         self.rotate()
+
+        # movement
+        self.velocity_x = 0
+        self.velocity_y = 0
+        self.acceleration = 0.5
+        self.friction = 0.1
+        self.max_speed = 8
+
 
     # draw the player image on the screen
     def draw(self, screen):
@@ -46,7 +53,7 @@ class Player:
     def move(self, keys, screen_width, screen_height):
         dx, dy = 0, 0
 
-        # check for key presses and move the player accordingly
+        # check for input and move the player accordingly
         if keys[pygame.K_w]:
             dy = -1
 
@@ -59,18 +66,42 @@ class Player:
         if keys[pygame.K_d]:
             dx = 1
 
+        # update direction based on input
         if dx != 0 or dy != 0:
             self.direction = self.get_direction_from_vector(dx, dy)
             self.rotate()
 
-            new_x = self.rect.x + (dx * self.speed)
-            new_y = self.rect.y + (dy * self.speed)
-            
-            if 0 < new_x < screen_width - self.rect.width:
-                self.rect.x = new_x
-            if 0 < new_y < screen_height - self.rect.height:
-                self.rect.y = new_y 
+            # normalize the direction vector
+            length = math.hypot(dx, dy)
+            dx /= length
+            dy /= length
 
+            self.velocity_x += dx * self.acceleration
+            self.velocity_y += dy * self.acceleration
+        else:
+            # apply friction if no movement
+            if self.velocity_x > 0:
+                self.velocity_x = max(0, self.velocity_x - self.friction)
+            elif self.velocity_x < 0:
+                self.velocity_x = min(0, self.velocity_x + self.friction)
+
+            if self.velocity_y > 0:
+                self.velocity_y = max(0, self.velocity_y - self.friction)
+            elif self.velocity_y < 0:
+                self.velocity_y = min(0, self.velocity_y + self.friction) 
+        
+        # limit speed
+        speed = math.hypot(self.velocity_x, self.velocity_y)
+        if speed > self.max_speed:
+            scale = self.max_speed / speed
+            self.velocity_x *= scale
+            self.velocity_y *= scale
+
+        self.rect.x += self.velocity_x
+        self.rect.y += self.velocity_y
+
+        # keep player within screen bounds
+        self.rect.clamp_ip(pygame.Rect(0, 0, screen_width, screen_height))
     def rotate(self):
         # determine angle based on direction
         angle_map = {
