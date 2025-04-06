@@ -47,6 +47,31 @@ class Player:
             self.direction = "RIGHT"
             moved = True
 
+        # check for diagonal movement
+        if keys[pygame.K_w] and keys[pygame.K_d]:
+            self.rect.x += self.speed
+            self.rect.y -= self.speed
+            self.direction = "UPRIGHT"
+            moved = True
+
+        if keys[pygame.K_w] and keys[pygame.K_a]:
+            self.rect.x -= self.speed
+            self.rect.y -= self.speed
+            self.direction = "UPLEFT"
+            moved = True
+
+        if keys[pygame.K_s] and keys[pygame.K_d]:
+            self.rect.x += self.speed
+            self.rect.y += self.speed
+            self.direction = "DOWNRIGHT"
+            moved = True
+
+        if keys[pygame.K_s] and keys[pygame.K_a]:
+            self.rect.x -= self.speed
+            self.rect.y += self.speed
+            self.direction = "DOWNLEFT"
+            moved = True
+
         if moved:
             self.rotate()
 
@@ -56,7 +81,11 @@ class Player:
             "UP": 0,
             "RIGHT": -90,
             "DOWN": 180,
-            "LEFT": 90
+            "LEFT": 90,
+            "UPRIGHT": -45,
+            "UPLEFT": 45,
+            "DOWNRIGHT": -135,
+            "DOWNLEFT": 135
         }
 
         # rotate the image

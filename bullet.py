@@ -21,13 +21,29 @@ class Bullet:
             self.rect.x -= self.speed
         elif self.direction == "RIGHT":
             self.rect.x += self.speed
+        elif self.direction == "UPRIGHT":
+            self.rect.x += self.speed
+            self.rect.y -= self.speed
+        elif self.direction == "UPLEFT":
+            self.rect.x -= self.speed
+            self.rect.y -= self.speed
+        elif self.direction == "DOWNRIGHT":
+            self.rect.x += self.speed
+            self.rect.y += self.speed
+        elif self.direction == "DOWNLEFT":
+            self.rect.x -= self.speed
+            self.rect.y += self.speed
 
     def rotate_image(self, image, direction):
         angle_map = {
             "UP": 0,
             "RIGHT": -90,
             "DOWN": 180,
-            "LEFT": 90
+            "LEFT": 90,
+            "UPRIGHT": -45,
+            "UPLEFT": 45,
+            "DOWNRIGHT": -135,
+            "DOWNLEFT": 135
         }
         angle = angle_map[direction]
         return pygame.transform.rotate(image, angle)
