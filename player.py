@@ -22,58 +22,54 @@ class Player:
     def draw(self, screen):
         screen.blit(self.image, self.rect)
 
+    def get_direction_from_vector(self, dx, dy):
+        if dx == 0 and dy == -1:
+            return "UP"
+        if dx == 0 and dy == 1:
+            return "DOWN"
+        if dx == -1 and dy == 0:
+            return "LEFT"
+        if dx == 1 and dy == 0:
+            return "RIGHT"
+        if dx == -1 and dy == -1:
+            return "UPLEFT"
+        if dx == 1 and dy == -1:
+            return "UPRIGHT"
+        if dx == -1 and dy == 1:
+            return "DOWNLEFT"
+        if dx == 1 and dy == 1:
+            return "DOWNRIGHT"
+        
+        return self.direction
+
     # move the player based on key inputs
     def move(self, keys, screen_width, screen_height):
-        moved = False
+        dx, dy = 0, 0
 
         # check for key presses and move the player accordingly
-        if keys[pygame.K_w] and self.rect.top > 0:
-            self.rect.y -= self.speed
-            self.direction = "UP"
-            moved = True
+        if keys[pygame.K_w]:
+            dy = -1
 
-        if keys[pygame.K_s] and self.rect.bottom < screen_height:
-            self.rect.y += self.speed
-            self.direction = "DOWN"
-            moved = True
+        if keys[pygame.K_s]:
+            dy = 1
 
-        if keys[pygame.K_a] and self.rect.left > 0:
-            self.rect.x -= self.speed
-            self.direction = "LEFT"
-            moved = True
+        if keys[pygame.K_a]:
+            dx = -1
 
-        if keys[pygame.K_d] and self.rect.right < screen_width:
-            self.rect.x += self.speed
-            self.direction = "RIGHT"
-            moved = True
+        if keys[pygame.K_d]:
+            dx = 1
 
-        # check for diagonal movement
-        if keys[pygame.K_w] and keys[pygame.K_d]:
-            self.rect.x += self.speed
-            self.rect.y -= self.speed
-            self.direction = "UPRIGHT"
-            moved = True
-
-        if keys[pygame.K_w] and keys[pygame.K_a]:
-            self.rect.x -= self.speed
-            self.rect.y -= self.speed
-            self.direction = "UPLEFT"
-            moved = True
-
-        if keys[pygame.K_s] and keys[pygame.K_d]:
-            self.rect.x += self.speed
-            self.rect.y += self.speed
-            self.direction = "DOWNRIGHT"
-            moved = True
-
-        if keys[pygame.K_s] and keys[pygame.K_a]:
-            self.rect.x -= self.speed
-            self.rect.y += self.speed
-            self.direction = "DOWNLEFT"
-            moved = True
-
-        if moved:
+        if dx != 0 or dy != 0:
+            self.direction = self.get_direction_from_vector(dx, dy)
             self.rotate()
+
+            new_x = self.rect.x + (dx * self.speed)
+            new_y = self.rect.y + (dy * self.speed)
+            
+            if 0 < new_x < screen_width - self.rect.width:
+                self.rect.x = new_x
+            if 0 < new_y < screen_height - self.rect.height:
+                self.rect.y = new_y 
 
     def rotate(self):
         # determine angle based on direction
