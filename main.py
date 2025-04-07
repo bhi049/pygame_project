@@ -2,6 +2,7 @@ import pygame
 import sys
 from player import Player # import custom Player class
 from bullet import Bullet # import custom Bullet class
+from enemy import Enemy # import custom Enemy class
 
 # initialize Pygame
 pygame.init()
@@ -21,9 +22,33 @@ BLACK = (0, 0, 0)
 
 # create the player object
 player = Player(WIDTH // 2, HEIGHT - 60)
+# create the enemy object
+enemy = Enemy(100, 100)
+enemies = [enemy] # list to store enemies
 
 # create a list to store bullets
 bullets = []
+
+def direction_to_player(enemy_rect, player_rect):
+    dx = player_rect.centerx -enemy_rect.centerx
+    dy = player_rect.centery - enemy_rect.centery
+
+    # determine direction based on dx and dy
+    dir_x = -1 if dx < -10 else 1 if dx > 10 else 0
+    dir_y = -1 if dy < -10 else 1 if dy > 10 else 0
+
+    direction_map = {
+        "UP": (0, -1),
+        "DOWN": (0, 1),
+        "LEFT": (-1, 0),
+        "RIGHT": (1, 0),
+        "UPRIGHT": (1, -1),
+        "UPLEFT": (-1, -1),
+        "DOWNRIGHT": (1, 1),
+        "DOWNLEFT": (-1, 1)
+    }
+
+    return direction_map.get((dir_x, dir_y), "UP")
 
 # main game loop
 running = True
@@ -58,6 +83,19 @@ while running:
         # check if bullet is off screen and remove it if so
         if bullet.is_off_screen(WIDTH, HEIGHT):
             bullets.remove(bullet)
+    
+    for enemy in enemies:
+        # move enemy towards player
+        enemy.move_towards_player(player.rect)
+        # update enemy shoot timer
+        enemy.update_shoot_timer(dt)
+        # draw enemy
+        enemy.draw(screen)
+        # check if enemy can shoot
+        if enemy.can_shoot():
+            bullet = Bullet(enemy.rect.centerx, enemy.rect.centery, direction_to_player(enemy.rect, player.rect))
+            bullets.append(bullet)
+            enemy.reset_shoot_timer()
 
     pygame.display.flip() # update the display
 
