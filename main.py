@@ -93,7 +93,7 @@ while running:
         enemy.draw(screen)
         # check if enemy can shoot
         if enemy.can_shoot():
-            bullet = Bullet(enemy.rect.centerx, enemy.rect.centery, direction_to_player(enemy.rect, player.rect))
+            bullet = Bullet(enemy.rect.centerx, enemy.rect.centery, enemy.direction)
             bullets.append(bullet)
             enemy.reset_shoot_timer()
 
