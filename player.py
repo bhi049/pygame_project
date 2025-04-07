@@ -51,15 +51,16 @@ class Player:
         return self.direction
     
     def get_thrust_position(self, direction):
+        # position of the thrust effect based on the direction
         offset_map = {
-            "UP": (0, 50),
-            "DOWN": (0, -50),
-            "LEFT": (50, 0),
-            "RIGHT": (-50, 0),
-            "UPRIGHT": (-35, 35),
-            "UPLEFT": (35, 35),
-            "DOWNRIGHT": (-35, -35),
-            "DOWNLEFT": (35, -35)
+            "UP": (0, 25),
+            "DOWN": (0, -25),
+            "LEFT": (25, 0),
+            "RIGHT": (-25, 0),
+            "UPRIGHT": (-18, 18),
+            "UPLEFT": (18, 18),
+            "DOWNRIGHT": (-18, -18),
+            "DOWNLEFT": (18, -18)
         }
 
         offset = offset_map.get(direction, (0, 50))
