@@ -17,6 +17,12 @@ class Player:
         self.direction = "UP"
         # initial rotation
         self.rotate()
+
+        # health
+        self.max_hp = 5
+        self.hp = self.max_hp
+        self.is_alive = True
+
         # movement
         self.velocity_x = 0
         self.velocity_y = 0
@@ -143,6 +149,11 @@ class Player:
         # keep position centered
         old_center = self.rect.center
         self.rect = self.image.get_rect(center=old_center)
+
+    def take_damage(self, amount):
+        self.hp -= amount
+        if self.hp <= 0:
+            self.is_alive = False
 
     def draw(self, screen):
         self.thrust.draw(screen)

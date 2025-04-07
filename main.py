@@ -62,7 +62,7 @@ while running:
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_l:
-                bullet = Bullet(player.rect.centerx, player.rect.centery, player.direction)
+                bullet = Bullet(player.rect.centerx, player.rect.centery, player.direction, owner="player")
                 bullets.append(bullet)
 
     # handle key presses
@@ -80,11 +80,27 @@ while running:
     for bullet in bullets[:]:
         bullet.move()
         bullet.draw(screen)
+
         # check if bullet is off screen and remove it if so
         if bullet.is_off_screen(WIDTH, HEIGHT):
             bullets.remove(bullet)
-    
+            continue
+
+        # check for collision with enemies
+        for enemy in enemies:
+            if bullet.owner == "player" and enemy.is_alive and bullet.rect.colliderect(enemy.rect):
+                enemy.take_damage(1)
+                bullets.remove(bullet)
+                break
+
+        # check for collision with player
+        if bullet.owner == "enemy" and player.is_alive and bullet.rect.colliderect(player.rect):
+            player.take_damage(1)
+            bullets.remove(bullet)
+
     for enemy in enemies:
+        if not enemy.is_alive:
+            continue
         # move enemy towards player
         enemy.move_towards_player(player.rect)
         # update enemy shoot timer
@@ -93,7 +109,7 @@ while running:
         enemy.draw(screen)
         # check if enemy can shoot
         if enemy.can_shoot():
-            bullet = Bullet(enemy.rect.centerx, enemy.rect.centery, enemy.direction)
+            bullet = Bullet(enemy.rect.centerx, enemy.rect.centery, enemy.direction, owner="enemy")
             bullets.append(bullet)
             enemy.reset_shoot_timer()
 

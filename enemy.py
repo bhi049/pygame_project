@@ -10,9 +10,19 @@ class Enemy:
         self.image = self.original_image # original image
         self.rect = self.image.get_rect(center=(x, y))
         
+        # helts
+        self.max_hp = 3
+        self.hp = self.max_hp
+        self.is_alive = True
+
+        # movement
         self.speed = 2
+
+        # shooting
         self.shoot_cooldown = 1000  # shot delay (ms)
         self.since_last_shot = 0
+
+        # initial direction
         self.direction = "UP"
 
     def move_towards_player(self, player_rect):
@@ -50,7 +60,6 @@ class Enemy:
 
         return direction_map.get((dir_x, dir_y), self.direction)
 
-    
     def rotate(self):
         # Rotate the image based on the direction
         angle_map = {
@@ -68,6 +77,12 @@ class Enemy:
         self.image = pygame.transform.rotate(self.original_image, angle)
         self.rect = self.image.get_rect(center=self.rect.center)
 
+    def take_damage(self, amount):
+        self.hp -= amount
+        if self.hp <= 0:
+            self.is_alive = False
+    
+
     def update_shoot_timer(self, dt):
         self.since_last_shot += dt
     
@@ -77,5 +92,9 @@ class Enemy:
     def reset_shoot_timer(self):
         self.since_last_shot = 0
 
+    # draw the enemy on the screen if alive
     def draw(self, screen):
-        screen.blit(self.image, self.rect)
+        if self.is_alive:
+            screen.blit(self.image, self.rect)
+
+    
