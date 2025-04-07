@@ -6,7 +6,7 @@ from thrust import Thrust
 class Player:
     def __init__(self, x, y):
         # load the ship image
-        image_path = os.path.join("assets", "images", "ships", "ship.png")
+        image_path = os.path.join("assets", "images", "ships", "player_ship.png")
         original = pygame.image.load(image_path).convert_alpha()
         self.original_image = pygame.transform.scale(original, (100,100)) # scale if needed
         self.image = self.original_image # current image used for drawing

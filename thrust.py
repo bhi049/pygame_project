@@ -17,6 +17,18 @@ class Thrust:
         self.direction_ref = direction_ref # reference to the direction of the player
         self.get_position_func = get_position_func # function to get the position of the player
 
+        # map diretions to thrust frames
+        self.angle_map = {
+            "UP": 0,
+            "DOWN": 180,
+            "RIGHT": -90,
+            "LEFT": 90,
+            "UPRIGHT": -45,
+            "UPLEFT": 45,
+            "DOWNRIGHT": -135,
+            "DOWNLEFT": 135
+        }
+
     def update(self, dt, is_thrusting):
         self.is_active = is_thrusting
         if not self.is_active:
@@ -37,5 +49,10 @@ class Thrust:
         frame = self.frames[self.thrust_frame_index]
         position = self.get_position_func(self.direction_ref())
 
+        # Rotate the frame based on the ships direction
+        direction = self.direction_ref()
+        angle = self.angle_map.get(direction, 0)
+        rotated_frame = pygame.transform.rotate(frame, angle)
+
         # Draw the thrust effect on the screen
-        screen.blit(frame, frame.get_rect(center=position))
+        screen.blit(rotated_frame, rotated_frame.get_rect(center=position))
